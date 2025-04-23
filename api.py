@@ -1,10 +1,11 @@
 from flask import Flask , jsonify
 import requests
+import json
 
 app = Flask(__name__)
 
 #API written to test the initial REST API response. Just a test API
-@app.route('/')
+@app.get('/')
 def home():
     return '<h1>Flask REST API </h1>'
 
