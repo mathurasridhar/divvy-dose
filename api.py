@@ -1,6 +1,7 @@
 from flask import Flask, abort
 import requests
 import json
+import logging
 
 app = Flask(__name__)
 
@@ -16,6 +17,7 @@ def home():
 @app.route('/repos/<reponame>', methods=['GET'])
 def getPublicRepos(reponame):
     """Get public repos from github and bitbucket and return the statistics of the same."""
+    logging.basicConfig(filename='app.log',level=logging.DEBUG, format='%(asctime)s-%(levelname)s-%(message)s')
     url_git = f'https://api.github.com/orgs/{reponame}/repos'
     url_bitbucket = f'https://api.bitbucket.org/2.0/repositories/{reponame}'
     response = requests.get(url_git)
@@ -55,11 +57,13 @@ def getPublicRepos(reponame):
                 bb_watcher_cnt += len(wres['values'])
                 bb_languages.append(repo['language'])
         res = [{'git_total_number_of_public_repos_unforked':len(git_repo_list_orig), 'git_total_number_of_public_repos_forked':len(git_repo_list_forked),'bitbucket_public_repos_unforked':len(bb_repos), 'bitbucket_public_forked_repos':len(bb_forked), 'git_watchers_count':sum(git_watchers_count), 'bitbkt_total_watchers':bb_watcher_cnt, 'git_repo_languages':list(set(git_repo_languages)), 'bitbucketlanguages':list(set(bb_languages)),'git_repo_topics':list(set(git_repo_topics))}]
-        print(res)
+        logging.info(res)
         repo_list1 = [{'Name':repo['name'], 'PublicURL':repo['html_url']} for repo in repos]
         return json.dumps(res, indent=4)
     else:
         # return jsonify({'Error':'Failed to retrieve public repositories'})
+        logging.basicConfig(filename='app.log',level=logging.ERROR, format='%(asctime)s-%(levelname)s-%(message)s')
+        logging.error('http error: 400 BAD REQUEST')
         abort(400, description="Error: Failed to connect")
         
 
