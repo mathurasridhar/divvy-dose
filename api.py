@@ -14,12 +14,12 @@ def home():
 #API to return the following profile information from any github/bitbucket repo: total number of public repos(fork, unfork separated)
 #watcher_count (github/bitbucket), list of language(github/bitbucket) , list of repo topics(feature available only for github)
 #API link used in dev environment: http://127.0.0.1:5000/repos/<your reponame>
-@app.route('/repos/<reponame>', methods=['GET'])
-def getPublicRepos(reponame):
+@app.route('/repos/git=<reponame>&bb=<bbrepo>', methods=['GET'])
+def getPublicRepos(reponame, bbrepo):
     """Get public repos from github and bitbucket and return the statistics of the same."""
     logging.basicConfig(filename='app.log',level=logging.DEBUG, format='%(asctime)s-%(levelname)s-%(message)s')
     url_git = f'https://api.github.com/orgs/{reponame}/repos'
-    url_bitbucket = f'https://api.bitbucket.org/2.0/repositories/{reponame}'
+    url_bitbucket = f'https://api.bitbucket.org/2.0/repositories/{bbrepo}'
     response = requests.get(url_git)
     res_bitbucket = requests.get(url_bitbucket)
     if response.status_code == 200 and res_bitbucket.status_code == 200:
